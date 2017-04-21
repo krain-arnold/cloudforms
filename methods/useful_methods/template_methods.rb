@@ -1,4 +1,4 @@
-# This is a custom error message that logs an error to automate.log
+# This is a custom error message that logs an error to automation.log
 # and changes the ae_result to error
 def error(msg)
   $evm.log(:error, msg)
