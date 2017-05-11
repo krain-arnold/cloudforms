@@ -6,3 +6,9 @@ def error(msg)
   $evm.root['ae_reason'] = msg.to_s
   exit MIQ_OK
 end
+
+# This is a custom logging method that assumes "info" level
+def log(msg, level = :info)
+  $evm.log(level, "#{msg}")
+end
+
