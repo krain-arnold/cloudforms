@@ -1,9 +1,9 @@
-#cloudforms
+# cloudforms
 
 a collection of useful things I've encountered while working with CloudForms and ManageIQ. A work in progress.
 
 
-######LINKS AND RESOURCES
+###### LINKS AND RESOURCES
 
 - [TigerIQ (the best blog)](http://tigeriq.co/)
 - [ManageIQ Community](http://manageiq.org/)
