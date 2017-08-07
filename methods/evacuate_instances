@@ -1,0 +1,59 @@
+#
+# Description: This method is triggered by the EvacuateInstances Class, which should be triggered by a button or a REST call. If triggered by a REST call, the parameter 'host_ipaddress' must be provided.
+#It will evacuate all instances on the given failed OpenStack Compute Node.
+#This method assumes a version 2 API.
+#
+
+require 'fog/openstack'
+
+host_ipaddress =  $evm.root['host_ipaddress']
+if host_ipaddress.nil?
+  $evm.log(:info, "Using: $evm.root['host']")
+  $evm.log(:info, "host => #{$evm.root['host']}")
+  host = $evm.root['host']
+else
+  $evm.log(:info, "Using: $evm.root['host_ipaddress']")
+  $evm.log(:info, "host_ipaddress: '#{$evm.root['host_ipaddress']}'")
+  host = $evm.vmdb('ManageIQ_Providers_Openstack_InfraManager_Host').where("ipaddress = '#{host_ipaddress}'").first
+end
+raise 'host empty' if host.nil?
+
+
+$evm.log(:info, "Evacuating instances on: #{host.name}")
+$evm.log(:info, host.attributes.sort)
+
+ems_id    = host.vms.first.ext_management_system.id
+openstack = $evm.vmdb('ext_management_system').find_by_id(ems_id)
+
+$evm.log(:info, "Connecting: #{openstack.hostname}")
+$evm.log(:info, "http://#{openstack.hostname}:#{openstack.port}/v2.0/tokens")
+conn = Fog::Compute.new({
+  :provider             => 'OpenStack',
+  :openstack_api_key    => openstack.authentication_password,
+  :openstack_username   => openstack.authentication_userid,
+  :openstack_auth_url   => "http://#{openstack.hostname}:#{openstack.port}/v2.0/tokens",
+  :openstack_tenant     => "admin"
+})
+
+body = {
+  'evacuate' => {
+    'onSharedStorage'   => false,
+  }
+}
+
+host.vms.each {|vm|
+  $evm.log(:info, "Evacuating: #{vm.name}")
+
+  begin
+    conn.server_action(vm.uid_ems, body)  
+  rescue Exception => e
+    $evm.log(:info, e.message)
+    $evm.log(:info, e.backtrace.inspect)
+  end
+}
+
+# sleep(1.minutes)
+
+$evm.log(:info, "EmsRefresh Over/UnderClouds")
+openstack.refresh
+host.ext_management_system.refresh
