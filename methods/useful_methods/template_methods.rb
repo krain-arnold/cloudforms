@@ -12,3 +12,16 @@ def log(msg, level = :info)
   $evm.log(level, "#{msg}")
 end
 
+# This is a good base framework for most API calls. It requires 'rest-client'.
+def invoke_api(http_method, headers, user, pass, url, payload=nil) #api_timeout is another common variable. Also, depending on the use, headers could either be passed as an argument or defined inside the method itself.
+#often, the url will need to be manipulated inside the method to make it flexible enough to hit different end points.  
+params = {
+  :method     => action,
+  :url        => url,
+  :headers    => headers,
+  :verify_ssl => false
+  }
+params[:payload] = payload if payload
+response = RestClient::Request.new(params).execute #it's often helpful to print out the response when debugging
+return JSON.parse(response)
+end
