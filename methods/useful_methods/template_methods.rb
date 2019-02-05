@@ -7,7 +7,7 @@ def error(msg)
   exit MIQ_OK
 end
 
-# This is a custom logging method that assumes "info" level
+# This is a custom logging method that assumes the "info" log level
 def log(msg, level = :info)
   $evm.log(level, "#{msg}")
 end
