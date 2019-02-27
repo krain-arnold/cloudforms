@@ -1,3 +1,7 @@
+#This Method is intended to be used as the Custom Automation in a Control
+#Policy The Policy event should be VM Create Complete, and the Policy
+#Profile should be applied at the Infrastructure Provider level.
+
 @DEBUG = false
 # This is a custom logging method that assumes the "info" log level
 def log(msg, level = :info)
